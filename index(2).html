@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Acadex helps students organize school tasks and deadlines.">
+<title>Acadex | Student Task Organizer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#14213d;--paper:#f5f8fc;--grid:#d6e0ee;--muted:#4f5f7a;--hi:#ffd93d;--green:#1f8a5b;--red:#c93a3f;--blue:#2f4bd0;--font:Figtree,ui-sans-serif,system-ui,-apple-system,Segoe UI,Arial,sans-serif;--display:"Bricolage Grotesque",Figtree,ui-sans-serif,system-ui,Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--font);color:var(--ink);background-color:var(--paper);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px;line-height:1.5}
+h1,h2,h3,.brand,.stat-value{font-family:var(--display);letter-spacing:-.02em}
+a{color:var(--blue)}
+.skip{position:absolute;left:-999px;top:8px;background:#fff;color:var(--ink);padding:8px 12px;border-radius:6px;z-index:10}.skip:focus{left:8px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,main:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.linkbtn{background:none;border:0;color:var(--blue);text-decoration:underline;cursor:pointer;font:inherit;padding:0}
+header{background:var(--ink);color:#fff;padding:24px max(20px,calc((100% - 1100px)/2 + 20px)) 0;border-bottom:4px solid var(--hi)}
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.brand{font-size:2.3rem;font-weight:800;line-height:1}
+header p{margin:6px 0 0;color:#cbd5ea}
+#today{color:#cbd5ea;font-size:.95rem}
+nav{display:flex;gap:4px;flex-wrap:wrap;margin-top:22px}
+nav button{border:0;background:transparent;color:#e3eaf7;border-radius:8px 8px 0 0;padding:11px 16px;cursor:pointer;font:600 .98rem var(--font)}
+nav button:hover{background:#ffffff1f}
+nav button.active{background:var(--hi);color:var(--ink)}
+main{max-width:1100px;margin:28px auto;padding:0 20px 40px}
+.view{display:none}.view.active{display:block}
+.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.section-title h1{font-size:2rem;margin:0;line-height:1.15}
+.muted{color:var(--muted)}
+.card{background:#fff;border:2px solid var(--ink);border-radius:6px;padding:20px}
+.card h2{font-size:1.25rem;margin:0 0 12px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:22px;background:#fff;border:2px solid var(--ink);border-radius:6px}
+.stats .card{border:0;border-radius:0;border-right:2px solid var(--ink);background:transparent}.stats .card:last-child{border-right:0}
+.stat-label{color:var(--muted);font-weight:600}
+.stat-value{font-size:2.8rem;font-weight:800;line-height:1.1}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.progress-track{height:18px;background:#fff;border:2px solid var(--ink);border-radius:99px;overflow:hidden;margin:12px 0}
+.progress-fill{height:100%;background:var(--green);width:0;transition:width .4s}
+.btn{border:2px solid var(--ink);border-radius:8px;padding:10px 16px;background:var(--hi);color:var(--ink);font:700 .98rem var(--font);cursor:pointer;box-shadow:3px 3px 0 var(--ink)}
+.btn:hover{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--ink)}
+.btn.secondary{background:#fff}
+.btn.danger{background:#fff;color:var(--red);border-color:var(--red);box-shadow:3px 3px 0 var(--red)}
+.btn.small{padding:5px 10px;font-size:.86rem;box-shadow:2px 2px 0 var(--ink)}.btn.danger.small{box-shadow:2px 2px 0 var(--red)}
+label{font-weight:600;font-size:.95rem}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+input,select,textarea{font:inherit;color:var(--ink);background:#fff;border:2px solid #8a98b3;border-radius:6px;padding:9px 10px;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--ink)}
+input[type=checkbox]{width:22px;height:22px;margin-top:2px;accent-color:var(--green);flex:none}
+.toolbar{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}.toolbar>:first-child{grid-column:1/-1}
+.task-list{display:flex;flex-direction:column;gap:10px}
+.task{display:flex;align-items:flex-start;gap:12px;border:2px solid var(--ink);border-left-width:10px;border-radius:6px;padding:12px 14px;background:#fff}
+.task.p-high{border-left-color:var(--red)}.task.p-medium{border-left-color:var(--hi)}.task.p-low{border-left-color:var(--green)}
+.task.done{background:#eef2f7;border-color:#8a98b3}.task.done .task-name{text-decoration:line-through;color:var(--muted)}
+.task-main{flex:1;min-width:0}
+.task-name{font-weight:700;font-size:1.05rem;overflow-wrap:anywhere}
+.task-meta{font-size:.88rem;color:var(--muted);margin-top:5px;display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.pill{font-size:.78rem;font-weight:700;border-radius:99px;padding:2px 9px;background:#e1e8f7;color:#1c3a8a;border:1.5px solid currentColor}
+.pill.high{background:#fde8e8;color:#a52a2f}.pill.medium{background:#fff3bf;color:#6b4e00}.pill.low{background:#dff5e9;color:#14633f}
+.task-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.empty{color:var(--muted);padding:14px;border:2px dashed #8a98b3;border-radius:6px;background:#ffffffb0}
+.privacy h2{margin-top:26px;font-size:1.2rem}.privacy .card{max-width:78ch}
+.footer{text-align:center;color:var(--muted);padding:24px 20px 30px;border-top:2px solid var(--ink);background:#fff}
+@media(max-width:760px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stats .card:nth-child(2){border-right:0}.stats .card:nth-child(-n+2){border-bottom:2px solid var(--ink)}.grid{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr}.section-title h1{font-size:1.6rem}.brand{font-size:1.9rem}}
+@media(max-width:420px){.card{padding:14px}.task{padding:10px}.row2{grid-template-columns:1fr}nav button{padding:10px 11px;font-size:.9rem}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}.btn:hover{transform:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#mainContent">Skip to main content</a>
+<header>
+ <div class="top"><div><div class="brand">Acadex</div><p>Your academic life, organized.</p></div><div id="today"></div></div>
+ <nav aria-label="Main navigation">
+  <button class="active" data-view="dashboard">Dashboard</button><button data-view="tasks">My Tasks</button><button data-view="privacy">Privacy Policy</button><button data-view="about">About</button>
+ </nav>
+</header>
+<main id="mainContent" tabindex="-1">
+<section id="dashboard" class="view active">
+ <div class="section-title"><div><h1>Student Dashboard</h1><div class="muted">A simple overview of your academic workload.</div></div><button class="btn" onclick="showView('tasks')">+ Add a task</button></div>
+ <div class="stats">
+  <div class="card"><div class="stat-label">All tasks</div><div class="stat-value" id="totalCount">0</div></div>
+  <div class="card"><div class="stat-label">Pending</div><div class="stat-value" id="pendingCount">0</div></div>
+  <div class="card"><div class="stat-label">Completed</div><div class="stat-value" id="completedCount">0</div></div>
+  <div class="card"><div class="stat-label">Overdue</div><div class="stat-value" id="overdueCount">0</div></div>
+ </div>
+ <div class="grid">
+  <div class="card"><h2>Completion progress</h2><div id="progressText">0% completed</div><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div><div class="muted" id="progressDetail">Add tasks to begin tracking your progress.</div></div>
+  <div class="card"><h2>Upcoming deadlines</h2><div id="upcomingList" class="task-list"><div class="empty">No upcoming tasks yet.</div></div></div>
+ </div>
+</section>
+<section id="tasks" class="view">
+ <div class="section-title"><div><h1>My Tasks</h1><div class="muted">Create and manage assignments, quizzes, and projects.</div></div></div>
+ <div class="grid">
+  <div class="card">
+   <h2 id="formHeading">Add a new task</h2>
+   <form id="taskForm">
+    <input type="hidden" id="editId">
+    <div class="field"><label for="taskName">Task title *</label><input id="taskName" required maxlength="100" placeholder="e.g., CPP123 final project"></div>
+    <div class="row2"><div class="field"><label for="subject">Subject</label><input id="subject" maxlength="60" placeholder="e.g., CPP123"></div><div class="field"><label for="dueDate">Due date *</label><input id="dueDate" type="date" required></div></div>
+    <div class="row2"><div class="field"><label for="priority">Priority</label><select id="priority"><option>Medium</option><option>High</option><option>Low</option></select></div><div class="field"><label for="taskType">Type</label><select id="taskType"><option>Assignment</option><option>Quiz / Exam</option><option>Project</option><option>Reading</option><option>Other</option></select></div></div>
+    <div class="field"><label for="notes">Notes (optional)</label><textarea id="notes" rows="2" maxlength="300" placeholder="Instructions or reminders"></textarea></div>
+    <button class="btn" type="submit" id="saveBtn">Save task</button> <button class="btn secondary" type="button" id="cancelEdit" hidden>Cancel edit</button>
+   </form>
+  </div>
+  <div class="card"><h2>Task list</h2><div class="toolbar"><input id="searchBox" placeholder="Search tasks or subjects" aria-label="Search tasks"><select id="statusFilter" aria-label="Filter by status"><option value="all">All statuses</option><option value="pending">Pending</option><option value="completed">Completed</option><option value="overdue">Overdue</option></select><select id="priorityFilter" aria-label="Filter by priority"><option value="all">All priorities</option><option>High</option><option>Medium</option><option>Low</option></select></div><div id="taskList" class="task-list"><div class="empty">No tasks yet. Add your first task using the form.</div></div></div>
+ </div>
+</section>
+<section id="privacy" class="view privacy">
+ <div class="section-title"><div><h1>Privacy Policy</h1><div class="muted">Last updated: October 17, 2026</div></div></div>
+ <div class="card">
+ <p><strong>Acadex</strong> is a student task organizer created as an academic project. This policy explains how the current version handles information.</p>
+ <h2>1. Information collected</h2><p>Acadex does not ask for an account, name, email address, location, or other identifying information. Users may enter task titles, subject names, dates, priorities, task types, and notes. Do not enter passwords, sensitive personal information, or confidential records.</p>
+ <h2>2. How information is stored and used</h2><p>Task entries are stored in the local storage of the browser on the device being used. The entries are used only to display and organize tasks within this browser. Clearing browser data or using a different browser/device may remove or make the entries unavailable. This version does not provide cloud synchronization or a remote database.</p>
+ <h2>3. Sharing and third parties</h2><p>The current app does not send task entries to a developer-operated server. The website is hosted on GitHub Pages, which may process standard technical information such as IP addresses, requests, and server logs under GitHub's own privacy policies. Acadex does not use analytics, advertising, cookies for tracking, or any other third-party service. If hosting or app features change, this policy will be updated to describe those changes accurately.</p>
+ <h2>4. Data deletion</h2><p>Users can delete individual tasks in the app. Users can also clear the browser's site data to remove locally stored tasks. Deleting site data may also remove other website preferences.</p>
+ <h2>5. Security and limitations</h2><p>Browser local storage is not a secure vault and should not be used for sensitive information. Anyone with access to the same browser profile may be able to view the stored tasks. Use a personal device and avoid confidential details.</p>
+ <h2>6. Children's privacy</h2><p>This academic organizer is not designed to collect personal information from children. Users should avoid entering identifying or sensitive information.</p>
+ <h2>7. Contact</h2><p>For privacy questions about Acadex, email the student developer, Rhod Cedrick Manalo, at <strong>REPLACE_WITH_YOUR_EMAIL</strong>. The website itself has no contact form and does not collect or store your email address.</p>
+  </div>
+</section>
+<section id="about" class="view">
+ <div class="section-title"><div><h1>About Acadex</h1><div class="muted">A lightweight web app for student productivity.</div></div></div>
+ <div class="card"><h2>Problem it addresses</h2><p>Students often manage deadlines across class announcements, notes, and messaging applications. Acadex provides one simple place to record tasks and check progress.</p><h2>Project objectives</h2><ul><li>Organize academic tasks and deadlines.</li><li>Help users identify pending and overdue work.</li><li>Show progress through a simple dashboard.</li><li>Provide a responsive interface and a clear privacy policy.</li></ul><h2>How to use it</h2><ol><li>Open My Tasks and fill in a title and due date.</li><li>Choose the subject, priority, and task type.</li><li>Save the task, then mark it complete when finished.</li><li>Use search and filters to find tasks.</li></ol></div>
+</section>
+</main>
+<footer class="footer">Acadex • CPP123 Emerging Technology • Academic project • <button class="linkbtn" onclick="showView('privacy')">Privacy Policy</button></footer>
+<script>
+const STORE_KEY='acadex_tasks_v1';
+let tasks=loadTasks();
+function loadTasks(){try{return JSON.parse(localStorage.getItem(STORE_KEY)||'[]')}catch(e){return []}}
+function saveTasks(){try{localStorage.setItem(STORE_KEY,JSON.stringify(tasks))}catch(e){alert('Could not save to this browser (storage may be full or blocked). Your changes will be lost when you close the page.')}render()}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function dateToday(){let d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function status(t){return t.done?'completed':(t.dueDate<dateToday()?'overdue':'pending')}
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('nav button').forEach(b=>{const on=b.dataset.view===id;b.classList.toggle('active',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});history.replaceState(null,'','#'+id);if(id==='tasks')render();window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+document.getElementById('today').textContent=new Date().toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+function resetForm(){document.getElementById('taskForm').reset();document.getElementById('editId').value='';document.getElementById('formHeading').textContent='Add a new task';document.getElementById('saveBtn').textContent='Save task';document.getElementById('cancelEdit').hidden=true}
+document.getElementById('cancelEdit').addEventListener('click',resetForm);
+document.getElementById('taskForm').addEventListener('submit',e=>{e.preventDefault();const id=document.getElementById('editId').value;const old=tasks.find(t=>t.id===id);const task={id:id||uid(),name:document.getElementById('taskName').value.trim(),subject:document.getElementById('subject').value.trim(),dueDate:document.getElementById('dueDate').value,priority:document.getElementById('priority').value,type:document.getElementById('taskType').value,notes:document.getElementById('notes').value.trim(),done:old?old.done:false,created:old?old.created:Date.now()};if(!task.name||!task.dueDate)return;if(id)tasks=tasks.map(t=>t.id===id?task:t);else tasks.push(task);resetForm();saveTasks()});
+function editTask(id){const t=tasks.find(x=>x.id===id);if(!t)return;showView('tasks');document.getElementById('editId').value=t.id;document.getElementById('taskName').value=t.name;document.getElementById('subject').value=t.subject;document.getElementById('dueDate').value=t.dueDate;document.getElementById('priority').value=t.priority;document.getElementById('taskType').value=t.type;document.getElementById('notes').value=t.notes;document.getElementById('formHeading').textContent='Edit task';document.getElementById('saveBtn').textContent='Update task';document.getElementById('cancelEdit').hidden=false;document.getElementById('taskName').focus()}
+function toggleTask(id,checked){tasks=tasks.map(t=>t.id===id?{...t,done:checked}:t);saveTasks()}
+function deleteTask(id){if(confirm('Delete this task? This cannot be undone.')){if(document.getElementById('editId').value===id)resetForm();tasks=tasks.filter(t=>t.id!==id);saveTasks()}}
+function taskHTML(t,actions=true){const s=status(t);return `<div class="task p-${String(t.priority).toLowerCase()} ${t.done?'done':''}"><input type="checkbox" aria-label="Mark ${esc(t.name)} completed" ${t.done?'checked':''} onchange="toggleTask('${t.id}',this.checked)"><div class="task-main"><div class="task-name">${esc(t.name)}</div><div class="task-meta"><span>${esc(t.subject||'No subject')}</span><span>•</span><span>Due ${esc(t.dueDate)}</span><span class="pill ${t.priority.toLowerCase()}">${esc(t.priority)}</span><span class="pill ${s==='overdue'?'high':s==='completed'?'low':''}">${s==='completed'?'Completed':s==='overdue'?'Overdue':'Pending'}</span></div>${t.notes?`<div class="task-meta">${esc(t.notes)}</div>`:''}</div>${actions?`<div class="task-actions"><button class="btn secondary small" onclick="editTask('${t.id}')">Edit</button><button class="btn danger small" onclick="deleteTask('${t.id}')">Delete</button></div>`:''}</div>`}
+function render(){const total=tasks.length,done=tasks.filter(t=>t.done).length,pending=tasks.filter(t=>!t.done&&status(t)==='pending').length,overdue=tasks.filter(t=>status(t)==='overdue').length;document.getElementById('totalCount').textContent=total;document.getElementById('pendingCount').textContent=pending;document.getElementById('completedCount').textContent=done;document.getElementById('overdueCount').textContent=overdue;const pct=total?Math.round(done/total*100):0;document.getElementById('progressText').textContent=pct+'% completed';document.getElementById('progressFill').style.width=pct+'%';document.getElementById('progressDetail').textContent=total?`${done} of ${total} task(s) completed.`:'Add tasks to begin tracking your progress.';
+const upcoming=tasks.filter(t=>!t.done&&t.dueDate>=dateToday()).sort((a,b)=>a.dueDate.localeCompare(b.dueDate)).slice(0,4);document.getElementById('upcomingList').innerHTML=upcoming.length?upcoming.map(t=>taskHTML(t,false)).join(''):'<div class="empty">No upcoming tasks yet.</div>';
+const q=document.getElementById('searchBox').value.toLowerCase(),sf=document.getElementById('statusFilter').value,pf=document.getElementById('priorityFilter').value;const filtered=tasks.filter(t=>(t.name+' '+t.subject+' '+t.notes).toLowerCase().includes(q)&&(sf==='all'||status(t)===sf)&&(pf==='all'||t.priority===pf)).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));document.getElementById('taskList').innerHTML=filtered.length?filtered.map(t=>taskHTML(t)).join(''):'<div class="empty">No tasks match. Add a task or change your filters.</div>'}
+['searchBox','statusFilter','priorityFilter'].forEach(id=>document.getElementById(id).addEventListener(id==='searchBox'?'input':'change',render));
+render();
+{const h=location.hash.slice(1);if(['dashboard','tasks','privacy','about'].includes(h))showView(h)}
+</script>
+</body></html>
